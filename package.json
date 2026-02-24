@@ -1,0 +1,80 @@
+{
+  "name": "@timesheet/n8n-nodes-timesheet",
+  "version": "1.0.0",
+  "description": "n8n node for timesheet.io time tracking API",
+  "keywords": [
+    "n8n-community-node-package",
+    "n8n-node",
+    "timesheet",
+    "time-tracking",
+    "project-management"
+  ],
+  "license": "MIT",
+  "homepage": "https://timesheet.io",
+  "author": {
+    "name": "timesheet.io",
+    "email": "support@timesheet.io"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/timesheetIO/n8n-nodes-timesheet.git"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc && npm run lint:fix && npm run copy:icons",
+    "copy:icons": "cp nodes/**/*.svg dist/nodes/ 2>/dev/null || mkdir -p dist/nodes/Timesheet && cp nodes/Timesheet/*.svg dist/nodes/Timesheet/ && (test -d nodes/TimesheetTrigger && cp nodes/TimesheetTrigger/*.svg dist/nodes/TimesheetTrigger/ 2>/dev/null || true)",
+    "dev": "tsc --watch",
+    "format": "prettier --write \"**/*.ts\"",
+    "format:check": "prettier --check \"**/*.ts\"",
+    "lint": "eslint nodes credentials --ext .ts",
+    "lint:fix": "eslint nodes credentials --ext .ts --fix",
+    "test": "vitest run --exclude 'test/integration/**'",
+    "test:watch": "vitest --exclude 'test/integration/**'",
+    "test:integration": "vitest run --include 'test/integration/**'",
+    "test:all": "vitest run",
+    "test:coverage": "vitest run --coverage --exclude 'test/integration/**'",
+    "prepublishOnly": "npm run build && npm run lint"
+  },
+  "files": [
+    "dist",
+    "credentials",
+    "nodes"
+  ],
+  "n8n": {
+    "n8nNodesApiVersion": 1,
+    "credentials": [
+      "dist/credentials/TimesheetApi.credentials.js",
+      "dist/credentials/TimesheetOAuth2Api.credentials.js",
+      "dist/credentials/TimesheetOAuth21Api.credentials.js"
+    ],
+    "nodes": [
+      "dist/nodes/Timesheet/Timesheet.node.js",
+      "dist/nodes/TimesheetTrigger/TimesheetTrigger.node.js"
+    ]
+  },
+  "dependencies": {
+    "@timesheet/sdk": "^1.0.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.6",
+    "@typescript-eslint/eslint-plugin": "^8.46.2",
+    "@typescript-eslint/parser": "^8.46.2",
+    "@vitest/coverage-v8": "^4.0.16",
+    "dotenv": "^17.2.3",
+    "eslint": "^8.56.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-n8n-nodes-base": "^1.16.4",
+    "eslint-plugin-prettier": "^5.1.2",
+    "n8n-core": "^2.3.0",
+    "n8n-workflow": "^2.3.0",
+    "prettier": "^3.1.1",
+    "typescript": "^5.3.3",
+    "vitest": "^4.0.16"
+  },
+  "peerDependencies": {
+    "n8n-workflow": "*"
+  }
+}

@@ -151,7 +151,7 @@ export async function getManyRates(
   const page = await client.getClient().rates.search(params);
 
   // Handle pagination manually to respect limit
-  const rates: ExtendedRate[] = returnAll ? [] : page.items.slice(0, params.limit as number);
+  const rates: ExtendedRate[] = returnAll ? [] : page.items.slice(0, params.limit);
 
   if (returnAll) {
     // Fetch all pages

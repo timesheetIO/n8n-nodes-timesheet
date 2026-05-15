@@ -56,23 +56,23 @@
     ]
   },
   "dependencies": {
-    "@timesheet/sdk": "^1.0.4"
+    "@timesheet/sdk": "^1.0.6"
   },
   "devDependencies": {
     "@types/node": "^20.10.6",
-    "@typescript-eslint/eslint-plugin": "^8.46.2",
-    "@typescript-eslint/parser": "^8.46.2",
-    "@vitest/coverage-v8": "^4.0.16",
-    "dotenv": "^17.2.3",
-    "eslint": "^8.56.0",
+    "@typescript-eslint/eslint-plugin": "^8.59.3",
+    "@typescript-eslint/parser": "^8.59.3",
+    "@vitest/coverage-v8": "^4.1.6",
+    "dotenv": "^17.4.2",
+    "eslint": "^8.57.1",
     "eslint-config-prettier": "^9.1.0",
-    "eslint-plugin-n8n-nodes-base": "^1.16.4",
-    "eslint-plugin-prettier": "^5.1.2",
-    "n8n-core": "^2.3.0",
-    "n8n-workflow": "^2.3.0",
-    "prettier": "^3.1.1",
-    "typescript": "^5.3.3",
-    "vitest": "^4.0.16"
+    "eslint-plugin-n8n-nodes-base": "^1.16.6",
+    "eslint-plugin-prettier": "^5.5.5",
+    "n8n-core": "^2.16.1",
+    "n8n-workflow": "^2.16.0",
+    "prettier": "^3.8.3",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.6"
   },
   "peerDependencies": {
     "n8n-workflow": "*"

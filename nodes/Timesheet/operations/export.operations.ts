@@ -186,22 +186,7 @@ export async function listTemplates(
 
   const page = await client.getClient().reports.export.listTemplates({ limit });
 
-  const templates: ExportTemplate[] = returnAll ? [] : page.items.slice(0, limit);
-
-  if (returnAll) {
-    templates.push(...page.items);
-    let currentPage = 1;
-
-    while (page.hasNextPage && page.params?.count && templates.length < page.params.count) {
-      currentPage++;
-      const nextPage = await client.getClient().reports.export.listTemplates({
-        page: currentPage,
-        limit: 100,
-      });
-      templates.push(...nextPage.items);
-      if (!nextPage.hasNextPage) break;
-    }
-  }
+  const templates: ExportTemplate[] = returnAll ? await page.toArray() : page.items.slice(0, limit);
 
   return templates.map(
     (template): ExportTemplateResponseData => ({

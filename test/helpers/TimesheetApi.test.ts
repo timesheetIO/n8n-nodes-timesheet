@@ -6,16 +6,18 @@ import { TimesheetApiClient } from '../../nodes/Timesheet/helpers/TimesheetApi';
 
 // Mock the SDK
 vi.mock('@timesheet/sdk', () => {
-  return {
-    TimesheetClient: vi.fn().mockImplementation((config) => {
-      return {
-        config,
-        timer: {},
-        projects: {},
-        tasks: {},
-      };
-    }),
-  };
+  // Use a class so `new TimesheetClient(...)` works under vitest 4
+  // (arrow functions passed to mockImplementation can't be used as constructors)
+  class TimesheetClient {
+    config: unknown;
+    timer = {};
+    projects = {};
+    tasks = {};
+    constructor(config: unknown) {
+      this.config = config;
+    }
+  }
+  return { TimesheetClient };
 });
 
 describe('TimesheetApi Helper', () => {

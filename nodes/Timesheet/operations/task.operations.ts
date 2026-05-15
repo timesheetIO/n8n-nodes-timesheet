@@ -41,7 +41,7 @@ export async function createTask(
   };
 
   const task = await client.getClient().tasks.create(createData);
-  const extendedTask = task as ExtendedTask;
+  const extendedTask = task;
 
   const duration = extendedTask.duration || 0;
   const hours = Math.floor(duration / 3600);
@@ -69,7 +69,7 @@ export async function getTask(
   const taskId = this.getNodeParameter('taskId', itemIndex) as string;
 
   const task = await client.getClient().tasks.get(taskId);
-  const extendedTask = task as ExtendedTask;
+  const extendedTask = task;
 
   const duration = extendedTask.duration || 0;
   const hours = Math.floor(duration / 3600);
@@ -125,7 +125,7 @@ export async function updateTask(
   };
 
   const task = await client.getClient().tasks.update(taskId, updateData);
-  const extendedTask = task as ExtendedTask;
+  const extendedTask = task;
 
   const duration = extendedTask.duration || 0;
   const hours = Math.floor(duration / 3600);
@@ -187,23 +187,15 @@ export async function getManyTasks(
 
   const page = await client.getClient().tasks.search(params);
 
-  // IMPORTANT: Use page.items directly to avoid fetching all pages
-  const tasks: ExtendedTask[] = returnAll ? [] : page.items.slice(0, params.limit as number);
+  const tasks: ExtendedTask[] = returnAll ? [] : page.items.slice(0, params.limit);
 
   if (returnAll) {
-    // Manual pagination for returnAll
-    let currentPage = 1;
-    let hasMore = true;
-    tasks.push(...page.items);
+    let currentPage = page;
+    tasks.push(...currentPage.items);
 
-    while (hasMore && page.params?.count && tasks.length < page.params.count) {
-      currentPage++;
-      const nextPage = await client.getClient().tasks.search({
-        ...params,
-        page: currentPage,
-      });
-      tasks.push(...nextPage.items);
-      hasMore = nextPage.items.length > 0;
+    while (currentPage.hasNextPage) {
+      currentPage = await currentPage.nextPage();
+      tasks.push(...currentPage.items);
     }
   }
 

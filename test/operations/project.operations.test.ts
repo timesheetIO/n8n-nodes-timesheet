@@ -235,14 +235,19 @@ describe('Project Operations', () => {
       const page2 = createMockPage(mockProjects.slice(1, 2), 3);
       const page3 = createMockPage([{ ...mockProject, id: 'proj-789' }], 3);
 
-      mockClient.projects.list
-        .mockResolvedValueOnce(page1)
-        .mockResolvedValueOnce(page2)
-        .mockResolvedValueOnce(page3);
+      page1.hasNextPage = true;
+      page2.hasNextPage = true;
+      page3.hasNextPage = false;
+
+      mockClient.projects.list.mockResolvedValueOnce(page1);
+      page1.nextPage.mockResolvedValueOnce(page2);
+      page2.nextPage.mockResolvedValueOnce(page3);
 
       const result = await projectOps.getManyProjects.call(mockContext, mockApiClient, 0);
 
-      expect(mockClient.projects.list).toHaveBeenCalledTimes(3);
+      expect(mockClient.projects.list).toHaveBeenCalledTimes(1);
+      expect(page1.nextPage).toHaveBeenCalledTimes(1);
+      expect(page2.nextPage).toHaveBeenCalledTimes(1);
       expect(result).toHaveLength(3);
     });
 

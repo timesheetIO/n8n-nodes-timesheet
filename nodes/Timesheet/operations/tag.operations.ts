@@ -135,7 +135,7 @@ export async function getManyTags(
   const page = await client.getClient().tags.search(params);
 
   // Handle pagination manually to respect limit
-  const tags = returnAll ? [] : page.items.slice(0, params.limit as number);
+  const tags = returnAll ? [] : page.items.slice(0, params.limit);
 
   if (returnAll) {
     // Fetch all pages

@@ -96,14 +96,15 @@ describe('TimesheetTrigger', () => {
       expect(eventValues).toContain('rate.update');
     });
 
-    it('should support both API Key and OAuth2 authentication', () => {
+    it('should support API Key, OAuth2 and OAuth 2.1 authentication', () => {
       const authParam = trigger.description.properties.find((p) => p.name === 'authentication');
       expect(authParam).toBeDefined();
 
       const options = (authParam as any).options;
-      expect(options).toHaveLength(2);
+      expect(options).toHaveLength(3);
       expect(options[0].value).toBe('apiKey');
       expect(options[1].value).toBe('oAuth2');
+      expect(options[2].value).toBe('oAuth21');
     });
   });
 

@@ -337,14 +337,19 @@ describe('Task Operations', () => {
       const page2 = createMockPage([mockTasks[1]], 3);
       const page3 = createMockPage([{ ...mockTask, id: 'task-789' }], 3);
 
-      mockClient.tasks.search
-        .mockResolvedValueOnce(page1)
-        .mockResolvedValueOnce(page2)
-        .mockResolvedValueOnce(page3);
+      page1.hasNextPage = true;
+      page2.hasNextPage = true;
+      page3.hasNextPage = false;
+
+      mockClient.tasks.search.mockResolvedValueOnce(page1);
+      page1.nextPage.mockResolvedValueOnce(page2);
+      page2.nextPage.mockResolvedValueOnce(page3);
 
       const result = await taskOps.getManyTasks.call(mockContext, mockApiClient, 0);
 
-      expect(mockClient.tasks.search).toHaveBeenCalledTimes(3);
+      expect(mockClient.tasks.search).toHaveBeenCalledTimes(1);
+      expect(page1.nextPage).toHaveBeenCalledTimes(1);
+      expect(page2.nextPage).toHaveBeenCalledTimes(1);
       expect(result).toHaveLength(3);
     });
 

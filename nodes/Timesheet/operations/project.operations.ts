@@ -132,24 +132,15 @@ export async function getManyProjects(
 
   const page = await client.getClient().projects.list(params);
 
-  // IMPORTANT: Use page.items directly, not async iteration
-  // to avoid fetching all pages unintentionally
-  const projects: ExtendedProject[] = returnAll ? [] : page.items.slice(0, params.limit as number);
+  const projects: ExtendedProject[] = returnAll ? [] : page.items.slice(0, params.limit);
 
   if (returnAll) {
-    // If returnAll is true, we need to paginate manually
-    let currentPage = 1;
-    let hasMore = true;
-    projects.push(...page.items);
+    let currentPage = page;
+    projects.push(...currentPage.items);
 
-    while (hasMore && page.params?.count && projects.length < page.params.count) {
-      currentPage++;
-      const nextPage = await client.getClient().projects.list({
-        ...params,
-        page: currentPage,
-      });
-      projects.push(...nextPage.items);
-      hasMore = nextPage.items.length > 0;
+    while (currentPage.hasNextPage) {
+      currentPage = await currentPage.nextPage();
+      projects.push(...currentPage.items);
     }
   }
 

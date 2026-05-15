@@ -112,7 +112,7 @@ export async function getManyWebhooks(
 
   const page = await client.getClient().webhooks.search(params);
 
-  const webhooks = returnAll ? [] : page.items.slice(0, params.limit as number);
+  const webhooks = returnAll ? [] : page.items.slice(0, params.limit);
 
   if (returnAll) {
     let currentPage = page;

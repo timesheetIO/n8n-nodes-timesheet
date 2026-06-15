@@ -7,20 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.1] - 2026-06-15
+
+### Changed
+- The published npm package now ships only the compiled `dist/` output; TypeScript source files are no longer included in the tarball.
+
+## [1.0.0] - 2026-06-15
+
 ### Added
 - New resources with full create, get, update, delete, and get many operations: Expense, Note, Pause, Todo, Team, and Automation.
 - Organization-scoped resources: Organization (get, update, get many), Absence Type, Absence (with approve, reject, cancel), and Contract (with activate, suspend, reactivate, terminate). Each operation selects the organization through a searchable picker backed by the new `searchOrganizations`/`getOrganizations` methods.
 - Absence responses expose the API `canApprove`, `canReject`, `canCancel`, and `canEdit` permission flags so workflows can branch on them. The node does not gate operations client side; the API remains the authority and a `403` now returns a clear permission error.
-
-### Changed
-- Updated `@timesheet/sdk` to v1.2.0.
-- Rate `factor` and `extra` are sent to and parsed from the API as decimal strings, matching the SDK. The node keeps its numeric input and output contract.
-- Tag responses read the team id from the nested `team` object (the SDK no longer exposes a flat `teamId`).
-- Export `generate` returns the download `url` only; available report types are read from the `items` array.
-
-## [1.0.0] - 2025-01-XX
-
-### Added
 - Initial release of n8n-nodes-timesheet
 - **Authentication**:
   - API Key authentication support
@@ -91,6 +88,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Integration with @timesheet/sdk v1.2.0
   - Full TypeScript type safety
   - 121 comprehensive unit tests
+
+### Changed
+- Rate `factor` and `extra` are sent to and parsed from the API as decimal strings, matching the SDK. The node keeps its numeric input and output contract.
+- Tag responses read the team id from the nested `team` object (the SDK no longer exposes a flat `teamId`).
+- Export `generate` returns the download `url` only; available report types are read from the `items` array.
 
 ### Notes
 - Based on Timesheet API v1 (https://api.timesheet.io/v1)

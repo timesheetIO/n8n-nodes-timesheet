@@ -1,6 +1,6 @@
 {
   "name": "@timesheet/n8n-nodes-timesheet",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "n8n node for timesheet.io time tracking API",
   "keywords": [
     "n8n-community-node-package",
@@ -39,9 +39,7 @@
     "prepublishOnly": "npm run build && npm run lint"
   },
   "files": [
-    "dist",
-    "credentials",
-    "nodes"
+    "dist"
   ],
   "n8n": {
     "n8nNodesApiVersion": 1,

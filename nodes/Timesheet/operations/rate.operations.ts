@@ -19,10 +19,13 @@ export async function createRate(
   const teamId =
     teamIdField && typeof teamIdField === 'object' ? (teamIdField.value as string) : teamIdField;
 
+  // The API represents factor/extra as decimal strings; the node keeps a
+  // numeric contract and converts at the SDK boundary.
+  const extra = additionalFields.extra as number | undefined;
   const createData = {
     title,
-    factor,
-    extra: additionalFields.extra as number | undefined,
+    factor: String(factor),
+    extra: extra !== undefined ? String(extra) : undefined,
     enabled: additionalFields.enabled as boolean | undefined,
     archived: additionalFields.archived as boolean | undefined,
     teamId,
@@ -34,8 +37,8 @@ export async function createRate(
   return {
     id: rate.id,
     title: rate.title,
-    factor: rate.factor,
-    extra: rate.extra,
+    factor: Number(rate.factor),
+    extra: rate.extra !== undefined ? Number(rate.extra) : undefined,
     enabled: rate.enabled,
     archived: rate.archived,
     teamId: extendedRate.team?.id,
@@ -60,8 +63,8 @@ export async function getRate(
   return {
     id: rate.id,
     title: rate.title,
-    factor: rate.factor,
-    extra: rate.extra,
+    factor: Number(rate.factor),
+    extra: rate.extra !== undefined ? Number(rate.extra) : undefined,
     enabled: rate.enabled,
     archived: rate.archived,
     teamId: extendedRate.team?.id,
@@ -81,10 +84,12 @@ export async function updateRate(
   const rateId = this.getNodeParameter('rateId', itemIndex) as string;
   const updateFields = this.getNodeParameter('updateFields', itemIndex, {});
 
+  const factor = updateFields.factor as number | undefined;
+  const extra = updateFields.extra as number | undefined;
   const updateData = {
     title: updateFields.title as string | undefined,
-    factor: updateFields.factor as number | undefined,
-    extra: updateFields.extra as number | undefined,
+    factor: factor !== undefined ? String(factor) : undefined,
+    extra: extra !== undefined ? String(extra) : undefined,
     enabled: updateFields.enabled as boolean | undefined,
     archived: updateFields.archived as boolean | undefined,
     deleted: updateFields.deleted as boolean | undefined,
@@ -96,8 +101,8 @@ export async function updateRate(
   return {
     id: rate.id,
     title: rate.title,
-    factor: rate.factor,
-    extra: rate.extra,
+    factor: Number(rate.factor),
+    extra: rate.extra !== undefined ? Number(rate.extra) : undefined,
     enabled: rate.enabled,
     archived: rate.archived,
     teamId: extendedRate.team?.id,
@@ -168,8 +173,8 @@ export async function getManyRates(
     (rate): RateResponseData => ({
       id: rate.id,
       title: rate.title,
-      factor: rate.factor,
-      extra: rate.extra,
+      factor: Number(rate.factor),
+      extra: rate.extra !== undefined ? Number(rate.extra) : undefined,
       enabled: rate.enabled,
       archived: rate.archived,
       teamId: rate.team?.id,

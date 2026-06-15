@@ -59,7 +59,10 @@ describe('Tag Operations', () => {
       const customTag = {
         ...mockTag,
         color: 150,
-        teamId: 'team-456',
+        team: {
+          id: 'team-456',
+          name: 'Custom Team',
+        },
       };
       mockClient.tags.create.mockResolvedValue(customTag);
 

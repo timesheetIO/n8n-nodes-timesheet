@@ -34,6 +34,16 @@ export function mapTimesheetError(error: unknown, node: INode, itemIndex: number
       );
     }
 
+    // Authorization errors (403)
+    if (response.status === 403) {
+      const detail = response.data?.message || response.data?.error;
+      throw new NodeOperationError(
+        node,
+        'You do not have permission to perform this action. It usually requires manager or owner access in the relevant team or organization.',
+        { itemIndex, description: detail },
+      );
+    }
+
     // Rate limiting errors (429)
     if (response.status === 429) {
       const retryAfter = response.headers?.['retry-after'] || '60';

@@ -11,7 +11,7 @@ Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes
 ```bash
 # In n8n UI
 Settings → Community Nodes → Install
-# Enter: n8n-nodes-timesheet
+# Enter: @timesheet/n8n-nodes-timesheet
 ```
 
 ### Manual Installation (Development)
@@ -26,7 +26,7 @@ npm run build
 # Link to n8n
 npm link
 cd ~/.n8n/custom
-npm link n8n-nodes-timesheet
+npm link @timesheet/n8n-nodes-timesheet
 
 # Restart n8n
 n8n start
@@ -34,7 +34,7 @@ n8n start
 
 ## Prerequisites
 
-- n8n version 0.227.0 or above
+- n8n version 1.0.0 or above
 - Node.js 18.x or above
 - timesheet.io account ([sign up](https://my.timesheet.io/signup))
 - API credentials (see Authentication below)
@@ -58,31 +58,44 @@ n8n start
 
 ## Operations
 
-### Current Implementation Status
+### Supported resources
 
-✅ **Phase 1 - Core Setup**
-- API Key authentication
-- OAuth2 authentication
-- Error handling
-- Helper utilities
+The Timesheet node supports the following resources. Each resource provides
+create, get, update, delete, and get many operations unless noted otherwise.
 
-🚧 **Phase 2 - Core Resources** (In Progress)
-- Timer operations
-- Project operations
-- Task operations
+- Timer (start, stop, pause, resume, status, update)
+- Project
+- Task
+- Tag
+- Rate
+- Expense
+- Note
+- Pause
+- Todo
+- Team
+- Automation
+- Webhook
+- Organization (get, update, get many)
+- Absence Type
+- Absence (create, get, update, delete, get many, approve, reject, cancel)
+- Contract (create, get, update, delete, get many, activate, suspend, reactivate, terminate)
+- Profile (get, update)
+- Settings (get, update)
+- Export (generate, send, templates, fields, report types)
+- Report (document, task, expense, and note reports as data or PDF/XML)
 
-📋 **Phase 3 - Extended Resources** (Planned)
-- Tag management
-- Rate management
-- Team management
-- Expense tracking
-- Note attachments
-- Pause/break tracking
-- Document generation
-- Webhook management
-- Automation rules
-- Todo items
-- Profile settings
+Organization, Absence Type, Absence, and Contract are organization-scoped. Pick
+the organization on each operation, then the resource. Some operations (for
+example approving an absence or suspending a contract) require manager or owner
+permission; the API enforces this and returns a clear error when an action is
+not allowed. Absence responses include `canApprove`, `canReject`, `canCancel`,
+and `canEdit` flags so a workflow can branch on what the current user may do.
+
+The Timesheet Trigger node listens for webhook events (timer, task, project,
+team, todo, tag, and rate events).
+
+Not yet covered: documents (invoice generation) and team or organization member
+management. These are planned for a later release.
 
 ## Development
 
@@ -134,5 +147,5 @@ Contributions are welcome! Please read our [Contributing Guide](CONTRIBUTING.md)
 
 | n8n-nodes-timesheet | n8n            | Node.js |
 |---------------------|----------------|---------|
-| 1.x.x               | >= 0.227.0     | >= 18.x |
+| 1.x.x               | >= 1.0.0       | >= 18.x |
 

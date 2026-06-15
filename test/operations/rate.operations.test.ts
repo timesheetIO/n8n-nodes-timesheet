@@ -36,7 +36,7 @@ describe('Rate Operations', () => {
 
       expect(mockClient.rates.create).toHaveBeenCalledWith({
         title: 'Standard Rate',
-        factor: 1.0,
+        factor: '1',
         extra: undefined,
         enabled: undefined,
         archived: undefined,
@@ -83,8 +83,8 @@ describe('Rate Operations', () => {
 
       expect(mockClient.rates.create).toHaveBeenCalledWith({
         title: 'Overtime Rate',
-        factor: 1.5,
-        extra: 10,
+        factor: '1.5',
+        extra: '10',
         enabled: true,
         archived: false,
         teamId: 'team-456',
@@ -147,8 +147,8 @@ describe('Rate Operations', () => {
 
       expect(mockClient.rates.update).toHaveBeenCalledWith('rate-1', {
         title: 'Updated Rate',
-        factor: 2.0,
-        extra: 15,
+        factor: '2',
+        extra: '15',
         enabled: false,
         archived: true,
         deleted: undefined,

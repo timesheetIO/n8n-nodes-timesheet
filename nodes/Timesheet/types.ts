@@ -186,8 +186,6 @@ export type ExtendedWebhook = Webhook;
  */
 export interface ExportResponseData {
   url: string;
-  filename?: string;
-  contentType?: string;
 }
 
 /**
@@ -213,9 +211,9 @@ export interface ExportReportTypesResponseData {
   reports: Array<{
     id: number;
     name: string;
-    description?: string;
     acceptsCustomFields?: boolean;
     fieldScope?: string;
+    dataCategory?: string;
   }>;
 }
 

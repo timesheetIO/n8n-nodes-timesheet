@@ -7,7 +7,7 @@ import { vi, type Mock } from 'vitest';
 import type { IExecuteFunctions, INode } from 'n8n-workflow';
 
 // Type for mocked SDK client methods - preserves vi.fn() mock capabilities
-type MockedMethod = Mock<any[], any>;
+type MockedMethod = Mock<(...args: any[]) => any>;
 
 /**
  * Type for mocked TimesheetClient that preserves mock method access
@@ -168,8 +168,8 @@ export function createMockTimesheetClient(): MockTimesheetClient {
  * Type for mock API client wrapper
  */
 export interface MockApiClient {
-  getClient: Mock<any[], MockTimesheetClient>;
-  paginate: Mock<any[], any>;
+  getClient: Mock<(...args: any[]) => MockTimesheetClient>;
+  paginate: Mock<(...args: any[]) => any>;
 }
 
 /**
@@ -317,7 +317,10 @@ export const mockTag = {
   id: 'tag-1',
   name: 'Development',
   color: 100,
-  teamId: 'team-123',
+  team: {
+    id: 'team-123',
+    name: 'Test Team',
+  },
   archived: false,
   created: 1706533200000,
   lastUpdate: 1706533200000,
@@ -329,7 +332,10 @@ export const mockTags = [
     id: 'tag-2',
     name: 'Testing',
     color: 200,
-    teamId: 'team-123',
+    team: {
+      id: 'team-123',
+      name: 'Test Team',
+    },
     archived: false,
     created: 1706533200000,
     lastUpdate: 1706533200000,

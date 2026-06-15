@@ -9,7 +9,7 @@ import type {
   IDataObject,
 } from 'n8n-workflow';
 import { NodeOperationError } from 'n8n-workflow';
-import type { Project, Tag, Team, Rate } from '@timesheet/sdk';
+import type { Project, Tag, Team, Rate, Organization } from '@timesheet/sdk';
 
 import { TimesheetApiClient } from './helpers/TimesheetApi';
 import { mapTimesheetError } from './helpers/errorMapping';
@@ -45,6 +45,19 @@ import { settingsOperations, settingsFields } from './descriptions/settings.desc
 import { webhookOperations, webhookFields } from './descriptions/webhook.description';
 import { exportOperations, exportFields } from './descriptions/export.description';
 import { reportOperations, reportFields } from './descriptions/report.description';
+import { expenseOperations, expenseFields } from './descriptions/expense.description';
+import { noteOperations, noteFields } from './descriptions/note.description';
+import { pauseOperations, pauseFields } from './descriptions/pause.description';
+import { todoOperations, todoFields } from './descriptions/todo.description';
+import { teamOperations, teamFields } from './descriptions/team.description';
+import { automationOperations, automationFields } from './descriptions/automation.description';
+import {
+  organizationOperations,
+  organizationFields,
+} from './descriptions/organization.description';
+import { absenceTypeOperations, absenceTypeFields } from './descriptions/absenceType.description';
+import { absenceOperations, absenceFields } from './descriptions/absence.description';
+import { contractOperations, contractFields } from './descriptions/contract.description';
 
 // Import operation handlers
 import * as timerOps from './operations/timer.operations';
@@ -57,6 +70,26 @@ import * as settingsOps from './operations/settings.operations';
 import * as webhookOps from './operations/webhook.operations';
 import * as exportOps from './operations/export.operations';
 import * as reportOps from './operations/report.operations';
+import * as expenseOps from './operations/expense.operations';
+import type { ExpenseResponseData } from './operations/expense.operations';
+import * as noteOps from './operations/note.operations';
+import type { NoteResponseData } from './operations/note.operations';
+import * as pauseOps from './operations/pause.operations';
+import type { PauseResponseData } from './operations/pause.operations';
+import * as todoOps from './operations/todo.operations';
+import type { TodoResponseData } from './operations/todo.operations';
+import * as teamOps from './operations/team.operations';
+import type { TeamResponseData } from './operations/team.operations';
+import * as automationOps from './operations/automation.operations';
+import type { AutomationResponseData } from './operations/automation.operations';
+import * as organizationOps from './operations/organization.operations';
+import type { OrganizationResponseData } from './operations/organization.operations';
+import * as absenceTypeOps from './operations/absenceType.operations';
+import type { AbsenceTypeResponseData } from './operations/absenceType.operations';
+import * as absenceOps from './operations/absence.operations';
+import type { AbsenceResponseData } from './operations/absence.operations';
+import * as contractOps from './operations/contract.operations';
+import type { ContractResponseData } from './operations/contract.operations';
 
 // Type alias for operation responses
 type OperationResponse =
@@ -84,6 +117,26 @@ type OperationResponse =
   | NoteReportResponseData
   | PdfResponseData
   | XmlResponseData
+  | ExpenseResponseData
+  | ExpenseResponseData[]
+  | NoteResponseData
+  | NoteResponseData[]
+  | PauseResponseData
+  | PauseResponseData[]
+  | TodoResponseData
+  | TodoResponseData[]
+  | TeamResponseData
+  | TeamResponseData[]
+  | AutomationResponseData
+  | AutomationResponseData[]
+  | OrganizationResponseData
+  | OrganizationResponseData[]
+  | AbsenceTypeResponseData
+  | AbsenceTypeResponseData[]
+  | AbsenceResponseData
+  | AbsenceResponseData[]
+  | ContractResponseData
+  | ContractResponseData[]
   | { success: boolean }
   | IDataObject;
 
@@ -197,6 +250,46 @@ export class Timesheet implements INodeType {
             name: 'Report',
             value: 'report',
           },
+          {
+            name: 'Expense',
+            value: 'expense',
+          },
+          {
+            name: 'Note',
+            value: 'note',
+          },
+          {
+            name: 'Pause',
+            value: 'pause',
+          },
+          {
+            name: 'Todo',
+            value: 'todo',
+          },
+          {
+            name: 'Team',
+            value: 'team',
+          },
+          {
+            name: 'Automation',
+            value: 'automation',
+          },
+          {
+            name: 'Organization',
+            value: 'organization',
+          },
+          {
+            name: 'Absence Type',
+            value: 'absenceType',
+          },
+          {
+            name: 'Absence',
+            value: 'absence',
+          },
+          {
+            name: 'Contract',
+            value: 'contract',
+          },
         ],
         default: 'timer',
       },
@@ -230,6 +323,36 @@ export class Timesheet implements INodeType {
       // Report
       ...reportOperations,
       ...reportFields,
+      // Expense
+      ...expenseOperations,
+      ...expenseFields,
+      // Note
+      ...noteOperations,
+      ...noteFields,
+      // Pause
+      ...pauseOperations,
+      ...pauseFields,
+      // Todo
+      ...todoOperations,
+      ...todoFields,
+      // Team
+      ...teamOperations,
+      ...teamFields,
+      // Automation
+      ...automationOperations,
+      ...automationFields,
+      // Organization
+      ...organizationOperations,
+      ...organizationFields,
+      // Absence Type
+      ...absenceTypeOperations,
+      ...absenceTypeFields,
+      // Absence
+      ...absenceOperations,
+      ...absenceFields,
+      // Contract
+      ...contractOperations,
+      ...contractFields,
     ],
   };
 
@@ -285,6 +408,24 @@ export class Timesheet implements INodeType {
           throw new NodeOperationError(
             this.getNode(),
             `Failed to load teams: ${error instanceof Error ? error.message : 'Unknown error'}`,
+          );
+        }
+      },
+
+      // Get organizations for dropdowns
+      async getOrganizations(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+        try {
+          const client = await TimesheetApiClient.fromLoadOptions(this);
+          const page = await client.getClient().organizations.list({ limit: 100 });
+
+          return page.items.map((organization: Organization) => ({
+            name: organization.name,
+            value: organization.id,
+          }));
+        } catch (error) {
+          throw new NodeOperationError(
+            this.getNode(),
+            `Failed to load organizations: ${error instanceof Error ? error.message : 'Unknown error'}`,
           );
         }
       },
@@ -378,6 +519,43 @@ export class Timesheet implements INodeType {
           throw new NodeOperationError(
             this.getNode(),
             `Failed to search teams: ${error instanceof Error ? error.message : 'Unknown error'}`,
+          );
+        }
+      },
+
+      // Search organizations for resource locator
+      async searchOrganizations(
+        this: ILoadOptionsFunctions,
+        filter?: string,
+        paginationToken?: string,
+      ): Promise<INodeListSearchResult> {
+        try {
+          const client = await TimesheetApiClient.fromLoadOptions(this);
+
+          const currentPage = paginationToken ? parseInt(paginationToken, 10) : 1;
+
+          const page = await client.getClient().organizations.search({
+            page: currentPage,
+            limit: 50,
+          });
+
+          const filteredOrganizations = filter
+            ? page.items.filter((organization: Organization) =>
+                organization.name.toLowerCase().includes(filter.toLowerCase()),
+              )
+            : page.items;
+
+          return {
+            results: filteredOrganizations.map((organization: Organization) => ({
+              name: organization.name,
+              value: organization.id,
+            })),
+            paginationToken: page.hasNextPage ? String(currentPage + 1) : undefined,
+          };
+        } catch (error) {
+          throw new NodeOperationError(
+            this.getNode(),
+            `Failed to search organizations: ${error instanceof Error ? error.message : 'Unknown error'}`,
           );
         }
       },
@@ -734,6 +912,261 @@ export class Timesheet implements INodeType {
               throw new NodeOperationError(
                 this.getNode(),
                 `Operation "${operation}" is not supported for report resource`,
+                { itemIndex: i },
+              );
+          }
+        } else if (resource === 'expense') {
+          switch (operation) {
+            case 'create':
+              responseData = await expenseOps.createExpense.call(this, client, i);
+              break;
+            case 'get':
+              responseData = await expenseOps.getExpense.call(this, client, i);
+              break;
+            case 'update':
+              responseData = await expenseOps.updateExpense.call(this, client, i);
+              break;
+            case 'delete':
+              responseData = await expenseOps.deleteExpense.call(this, client, i);
+              break;
+            case 'getMany':
+              responseData = await expenseOps.getManyExpenses.call(this, client, i);
+              break;
+            default:
+              throw new NodeOperationError(
+                this.getNode(),
+                `Operation "${operation}" is not supported for expense resource`,
+                { itemIndex: i },
+              );
+          }
+        } else if (resource === 'note') {
+          switch (operation) {
+            case 'create':
+              responseData = await noteOps.createNote.call(this, client, i);
+              break;
+            case 'get':
+              responseData = await noteOps.getNote.call(this, client, i);
+              break;
+            case 'update':
+              responseData = await noteOps.updateNote.call(this, client, i);
+              break;
+            case 'delete':
+              responseData = await noteOps.deleteNote.call(this, client, i);
+              break;
+            case 'getMany':
+              responseData = await noteOps.getManyNotes.call(this, client, i);
+              break;
+            default:
+              throw new NodeOperationError(
+                this.getNode(),
+                `Operation "${operation}" is not supported for note resource`,
+                { itemIndex: i },
+              );
+          }
+        } else if (resource === 'pause') {
+          switch (operation) {
+            case 'create':
+              responseData = await pauseOps.createPause.call(this, client, i);
+              break;
+            case 'get':
+              responseData = await pauseOps.getPause.call(this, client, i);
+              break;
+            case 'update':
+              responseData = await pauseOps.updatePause.call(this, client, i);
+              break;
+            case 'delete':
+              responseData = await pauseOps.deletePause.call(this, client, i);
+              break;
+            case 'getMany':
+              responseData = await pauseOps.getManyPauses.call(this, client, i);
+              break;
+            default:
+              throw new NodeOperationError(
+                this.getNode(),
+                `Operation "${operation}" is not supported for pause resource`,
+                { itemIndex: i },
+              );
+          }
+        } else if (resource === 'todo') {
+          switch (operation) {
+            case 'create':
+              responseData = await todoOps.createTodo.call(this, client, i);
+              break;
+            case 'get':
+              responseData = await todoOps.getTodo.call(this, client, i);
+              break;
+            case 'update':
+              responseData = await todoOps.updateTodo.call(this, client, i);
+              break;
+            case 'delete':
+              responseData = await todoOps.deleteTodo.call(this, client, i);
+              break;
+            case 'getMany':
+              responseData = await todoOps.getManyTodos.call(this, client, i);
+              break;
+            default:
+              throw new NodeOperationError(
+                this.getNode(),
+                `Operation "${operation}" is not supported for todo resource`,
+                { itemIndex: i },
+              );
+          }
+        } else if (resource === 'team') {
+          switch (operation) {
+            case 'create':
+              responseData = await teamOps.createTeam.call(this, client, i);
+              break;
+            case 'get':
+              responseData = await teamOps.getTeam.call(this, client, i);
+              break;
+            case 'update':
+              responseData = await teamOps.updateTeam.call(this, client, i);
+              break;
+            case 'delete':
+              responseData = await teamOps.deleteTeam.call(this, client, i);
+              break;
+            case 'getMany':
+              responseData = await teamOps.getManyTeams.call(this, client, i);
+              break;
+            default:
+              throw new NodeOperationError(
+                this.getNode(),
+                `Operation "${operation}" is not supported for team resource`,
+                { itemIndex: i },
+              );
+          }
+        } else if (resource === 'automation') {
+          switch (operation) {
+            case 'create':
+              responseData = await automationOps.createAutomation.call(this, client, i);
+              break;
+            case 'get':
+              responseData = await automationOps.getAutomation.call(this, client, i);
+              break;
+            case 'update':
+              responseData = await automationOps.updateAutomation.call(this, client, i);
+              break;
+            case 'delete':
+              responseData = await automationOps.deleteAutomation.call(this, client, i);
+              break;
+            case 'getMany':
+              responseData = await automationOps.getManyAutomations.call(this, client, i);
+              break;
+            default:
+              throw new NodeOperationError(
+                this.getNode(),
+                `Operation "${operation}" is not supported for automation resource`,
+                { itemIndex: i },
+              );
+          }
+        } else if (resource === 'organization') {
+          switch (operation) {
+            case 'get':
+              responseData = await organizationOps.getOrganization.call(this, client, i);
+              break;
+            case 'update':
+              responseData = await organizationOps.updateOrganization.call(this, client, i);
+              break;
+            case 'getMany':
+              responseData = await organizationOps.getManyOrganizations.call(this, client, i);
+              break;
+            default:
+              throw new NodeOperationError(
+                this.getNode(),
+                `Operation "${operation}" is not supported for organization resource`,
+                { itemIndex: i },
+              );
+          }
+        } else if (resource === 'absenceType') {
+          switch (operation) {
+            case 'create':
+              responseData = await absenceTypeOps.createAbsenceType.call(this, client, i);
+              break;
+            case 'get':
+              responseData = await absenceTypeOps.getAbsenceType.call(this, client, i);
+              break;
+            case 'update':
+              responseData = await absenceTypeOps.updateAbsenceType.call(this, client, i);
+              break;
+            case 'delete':
+              responseData = await absenceTypeOps.deleteAbsenceType.call(this, client, i);
+              break;
+            case 'getMany':
+              responseData = await absenceTypeOps.getManyAbsenceTypes.call(this, client, i);
+              break;
+            default:
+              throw new NodeOperationError(
+                this.getNode(),
+                `Operation "${operation}" is not supported for absence type resource`,
+                { itemIndex: i },
+              );
+          }
+        } else if (resource === 'absence') {
+          switch (operation) {
+            case 'create':
+              responseData = await absenceOps.createAbsence.call(this, client, i);
+              break;
+            case 'get':
+              responseData = await absenceOps.getAbsence.call(this, client, i);
+              break;
+            case 'update':
+              responseData = await absenceOps.updateAbsence.call(this, client, i);
+              break;
+            case 'delete':
+              responseData = await absenceOps.deleteAbsence.call(this, client, i);
+              break;
+            case 'getMany':
+              responseData = await absenceOps.getManyAbsences.call(this, client, i);
+              break;
+            case 'approve':
+              responseData = await absenceOps.approveAbsence.call(this, client, i);
+              break;
+            case 'reject':
+              responseData = await absenceOps.rejectAbsence.call(this, client, i);
+              break;
+            case 'cancel':
+              responseData = await absenceOps.cancelAbsence.call(this, client, i);
+              break;
+            default:
+              throw new NodeOperationError(
+                this.getNode(),
+                `Operation "${operation}" is not supported for absence resource`,
+                { itemIndex: i },
+              );
+          }
+        } else if (resource === 'contract') {
+          switch (operation) {
+            case 'create':
+              responseData = await contractOps.createContract.call(this, client, i);
+              break;
+            case 'get':
+              responseData = await contractOps.getContract.call(this, client, i);
+              break;
+            case 'update':
+              responseData = await contractOps.updateContract.call(this, client, i);
+              break;
+            case 'delete':
+              responseData = await contractOps.deleteContract.call(this, client, i);
+              break;
+            case 'getMany':
+              responseData = await contractOps.getManyContracts.call(this, client, i);
+              break;
+            case 'activate':
+              responseData = await contractOps.activateContract.call(this, client, i);
+              break;
+            case 'suspend':
+              responseData = await contractOps.suspendContract.call(this, client, i);
+              break;
+            case 'reactivate':
+              responseData = await contractOps.reactivateContract.call(this, client, i);
+              break;
+            case 'terminate':
+              responseData = await contractOps.terminateContract.call(this, client, i);
+              break;
+            default:
+              throw new NodeOperationError(
+                this.getNode(),
+                `Operation "${operation}" is not supported for contract resource`,
                 { itemIndex: i },
               );
           }

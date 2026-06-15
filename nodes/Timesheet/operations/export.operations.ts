@@ -59,8 +59,6 @@ export async function generateExport(
 
   return {
     url: result.url,
-    filename: result.filename,
-    contentType: result.contentType,
   };
 }
 
@@ -142,7 +140,10 @@ export async function getExportFields(
 ): Promise<ExportFieldsResponseData> {
   const scope = this.getNodeParameter('scope', itemIndex, 'all') as 'all' | 'project' | 'team';
 
-  const result = await client.getClient().reports.export.getFields(scope);
+  // The API has no 'all' scope; omitting the scope returns every field.
+  const result = await client
+    .getClient()
+    .reports.export.getFields(scope === 'all' ? undefined : scope);
 
   return {
     fields: result.fields.map((field) => ({
@@ -166,12 +167,12 @@ export async function getReportTypes(
   const result = await client.getClient().reports.export.getReportTypes();
 
   return {
-    reports: result.reports.map((report) => ({
+    reports: result.items.map((report) => ({
       id: report.id,
       name: report.name,
-      description: report.description,
-      acceptsCustomFields: report.acceptsCustomFields,
+      acceptsCustomFields: report.acceptFields,
       fieldScope: report.fieldScope,
+      dataCategory: report.dataCategory,
     })),
   };
 }

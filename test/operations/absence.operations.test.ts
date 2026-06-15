@@ -80,7 +80,11 @@ describe('Absence Operations', () => {
         .mockReturnValueOnce('at-1')
         .mockReturnValueOnce('2025-02-01T00:00:00+00:00')
         .mockReturnValueOnce('2025-02-05T00:00:00+00:00')
-        .mockReturnValueOnce({ fullDay: true, reason: 'Vacation', documentationUrl: 'https://x.test/doc' });
+        .mockReturnValueOnce({
+          fullDay: true,
+          reason: 'Vacation',
+          documentationUrl: 'https://x.test/doc',
+        });
 
       mockClient.absences.create.mockResolvedValue(mockAbsence);
 

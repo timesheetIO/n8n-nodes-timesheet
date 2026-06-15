@@ -22,7 +22,10 @@ const mockAbsenceType = {
   lastUpdate: 1706533200000,
 };
 
-const mockAbsenceTypes = [mockAbsenceType, { ...mockAbsenceType, id: 'at-2', code: 'SICK', name: 'Sick' }];
+const mockAbsenceTypes = [
+  mockAbsenceType,
+  { ...mockAbsenceType, id: 'at-2', code: 'SICK', name: 'Sick' },
+];
 
 describe('AbsenceType Operations', () => {
   let mockContext: any;
